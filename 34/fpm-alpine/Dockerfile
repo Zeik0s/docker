@@ -125,6 +125,12 @@ RUN { \
     chown -R www-data:root /var/www; \
     chmod -R g=u /var/www
 
+# Opcache JIT crashes on arm64 architecture, see https://github.com/nextcloud/docker/issues/2576 and https://github.com/php/php-src/issues/22084
+# This disables the JIT only for arm64 images, if the architecture during build is arm64
+RUN if [ $TARGETARCH = "arm64" ]; then \
+        echo 'opcache.jit=disable' >> /usr/local/etc/php/conf.d/opcache-recommended.ini \
+    ; fi
+
 VOLUME /var/www/html
 
 
